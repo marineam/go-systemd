@@ -60,20 +60,38 @@ type Conn struct {
 func New() (*Conn, error) {
 	c := new(Conn)
 
+	var err error
+        c.sysconn, err = dbus.SystemBusPrivate()
+        if err != nil {
+		return nil, err
+	}
+
 	if err := c.initConnection(); err != nil {
 		return nil, err
 	}
 
-	c.initJobs()
+	return c, nil
+}
+
+// NewUser establishes a connection to the session bus for a user systemd.
+func NewUser() (*Conn, error) {
+	c := new(Conn)
+
+	var err error
+        c.sysconn, err = dbus.SessionBusPrivate()
+        if err != nil {
+		return nil, err
+	}
+
+	if err := c.initConnection(); err != nil {
+		return nil, err
+	}
+
 	return c, nil
 }
 
 func (c *Conn) initConnection() error {
 	var err error
-	c.sysconn, err = dbus.SystemBusPrivate()
-	if err != nil {
-		return err
-	}
 
 	// Only use EXTERNAL method, and hardcode the uid (not username)
 	// to avoid a username lookup (which requires a dynamically linked
@@ -99,6 +117,7 @@ func (c *Conn) initConnection() error {
 		"type='signal', interface='org.freedesktop.systemd1.Manager', member='JobRemoved'")
 	c.initSubscription()
 	c.initDispatch()
+	c.initJobs()
 
 	return nil
 }

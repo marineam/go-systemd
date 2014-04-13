@@ -39,3 +39,10 @@ func TestNew(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// TestNewUser ensures that NewUser() works without errors.
+func TestNewUser(t *testing.T) {
+        if _, err := NewUser(); err != nil {
+		t.Fatal(err)
+	}
+}

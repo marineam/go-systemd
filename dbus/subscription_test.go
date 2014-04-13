@@ -7,19 +7,13 @@ import (
 
 // TestSubscribe exercises the basics of subscription
 func TestSubscribe(t *testing.T) {
-	conn, err := New()
+	conn := setupConn(t)
 
-	if err != nil {
+	if err := conn.Subscribe(); err != nil {
 		t.Fatal(err)
 	}
 
-	err = conn.Subscribe()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = conn.Unsubscribe()
-	if err != nil {
+	if err := conn.Unsubscribe(); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -28,19 +22,13 @@ func TestSubscribe(t *testing.T) {
 func TestSubscribeUnit(t *testing.T) {
 	target := "subscribe-events.service"
 
-	conn, err := New()
+	conn := setupConn(t)
 
-	if err != nil {
+	if err := conn.Subscribe(); err != nil {
 		t.Fatal(err)
 	}
 
-	err = conn.Subscribe()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = conn.Unsubscribe()
-	if err != nil {
+	if err := conn.Unsubscribe(); err != nil {
 		t.Fatal(err)
 	}
 

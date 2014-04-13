@@ -17,6 +17,7 @@ limitations under the License.
 package dbus
 
 import (
+	"flag"
 	"fmt"
 	"math/rand"
 	"os"
@@ -27,8 +28,26 @@ import (
 	"github.com/godbus/dbus"
 )
 
+var systemdInstance = flag.String("systemd-instance", "guess",
+	"Test against the 'system' or 'user' manager or just 'guess'")
+
 func setupConn(t *testing.T) *Conn {
-	conn, err := New()
+        var conn *Conn
+        var err error
+
+	switch {
+	case *systemdInstance == "system":
+		conn, err = New()
+	case *systemdInstance == "user":
+		conn, err = NewUser()
+	case *systemdInstance == "guess" && os.Getuid() == 0:
+		conn, err = New()
+	case *systemdInstance == "guess" && os.Getuid() != 0:
+		conn, err = NewUser()
+	default:
+		t.Fatalf("Invalid --systemd-instance value: %q", *systemdInstance)
+	}
+
 	if err != nil {
 		t.Fatal(err)
 	}
